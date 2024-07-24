@@ -3,7 +3,8 @@ FROM nginx:1.22-alpine
 LABEL maintainer="littleheroes <support@littleheroes.jp>"
 SHELL ["/bin/ash", "-oeux", "pipefail", "-c"]
 
-ENV TZ=Asia/Tokyo
+ARG WORKDIR \
+    DOCKERDIR
 
 RUN apk update && \
   apk add --update --no-cache --virtual=.build-dependencies g++
@@ -17,4 +18,4 @@ COPY --from=node /opt /opt
 # nginx config file
 COPY ./nginx/*.conf /etc/nginx/conf.d/
 
-WORKDIR /src
+WORKDIR ${WORKDIR}
