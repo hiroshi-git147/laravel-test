@@ -28,6 +28,17 @@ services:
         target: /root/.config/psysh
         volume:
           nocopy: true
+
+  mail:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+    volumes:
+      - maildir:/tmp
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /tmp
+
   web:
     build:
       context: .
