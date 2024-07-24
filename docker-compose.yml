@@ -9,11 +9,14 @@ services:
   app:
     build:
       context: .
-      dockerfile: ../test1/php/Dockerfile
+      dockerfile: ${DOCKERDIR}/php/Dockerfile
+      args:
+        - WORKDIR=${WORKDIR}
+        - DOCKERDIR=${DOCKERDIR}
     volumes:
       - type: bind
         source: ./src
-        target: /src
+        target: ${WORKDIR}
       - type: volume
         source: php-fpm-socket
         target: /var/run/php-fpm
@@ -27,38 +30,43 @@ services:
   web:
     build:
       context: .
-      dockerfile: ../test1/nginx/Dockerfile
+      dockerfile: ${DOCKERDIR}/nginx/Dockerfile
+      args:
+        - WORKDIR=${WORKDIR}
+        - DOCKERDIR=${DOCKERDIR}
     ports:
       - target: 80
         protocol: tcp
         mode: host
-        published: 80
+        published: ${WEB_PORT:-80}
     volumes:
       - type: bind
         source: ./src
-        target: /src
+        target: ${WORKDIR}
       - type: volume
         source: php-fpm-socket
         target: /var/run/php-fpm
         volume:
           nocopy: true
-  # |--------------------------
-  # |
-  # | ここから追記
-  # |
-  # |--------------------------
   db:
     build:
       context: .
-      dockerfile: ../test1/mysql/Dockerfile
+      dockerfile: ${DOCKERDIR}/mysql/Dockerfile
+      args:
+        - DOCKERDIR=${DOCKERDIR}
     ports:
       - target: 3306
         protocol: tcp
         mode: host
-        published: 3306
+        published: ${DB_PORT:-3306}
     volumes:
       - type: volume
         source: db-store
         target: /var/lib/mysql
         volume:
           nocopy: true
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
