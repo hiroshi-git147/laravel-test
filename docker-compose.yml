@@ -3,6 +3,7 @@ version: "3.9"
 volumes:
     php-fpm-socket:
     psysh-store:
+    db-store:
 
 services:
   app:
@@ -23,11 +24,6 @@ services:
         target: /root/.config/psysh
         volume:
           nocopy: true
-  # |--------------------------
-  # |
-  # | ここから追記
-  # |
-  # |--------------------------
   web:
     build:
       context: .
@@ -44,5 +40,25 @@ services:
       - type: volume
         source: php-fpm-socket
         target: /var/run/php-fpm
+        volume:
+          nocopy: true
+  # |--------------------------
+  # |
+  # | ここから追記
+  # |
+  # |--------------------------
+  db:
+    build:
+      context: .
+      dockerfile: ../test1/mysql/Dockerfile
+    ports:
+      - target: 3306
+        protocol: tcp
+        mode: host
+        published: 3306
+    volumes:
+      - type: volume
+        source: db-store
+        target: /var/lib/mysql
         volume:
           nocopy: true
