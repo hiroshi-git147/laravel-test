@@ -1,5 +1,3 @@
-version: "3.9"
-
 volumes:
     php-fpm-socket:
     psysh-store:
@@ -8,7 +6,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./docker/php/Dockerfile
+      dockerfile: ../test1/php/Dockerfile
     volumes:
       # 作業ファイルの同期
       - type: bind
