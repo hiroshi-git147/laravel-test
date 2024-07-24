@@ -4,6 +4,7 @@ volumes:
     php-fpm-socket:
     psysh-store:
     db-store:
+    maildir: {}
 
 services:
   app:
