@@ -1,3 +1,5 @@
+version: "3.9"
+
 volumes:
     php-fpm-socket:
     psysh-store:
@@ -8,19 +10,39 @@ services:
       context: .
       dockerfile: ../test1/php/Dockerfile
     volumes:
-      # 作業ファイルの同期
       - type: bind
         source: ./src
         target: /src
-      # unixドメインソケット通信
       - type: volume
         source: php-fpm-socket
         target: /var/run/php-fpm
         volume:
           nocopy: true
-      # Laravel tinker（psysh）の履歴保持
       - type: volume
         source: psysh-store
         target: /root/.config/psysh
+        volume:
+          nocopy: true
+  # |--------------------------
+  # |
+  # | ここから追記
+  # |
+  # |--------------------------
+  web:
+    build:
+      context: .
+      dockerfile: ../test1/nginx/Dockerfile
+    ports:
+      - target: 80
+        protocol: tcp
+        mode: host
+        published: 80
+    volumes:
+      - type: bind
+        source: ./src
+        target: /src
+      - type: volume
+        source: php-fpm-socket
+        target: /var/run/php-fpm
         volume:
           nocopy: true
